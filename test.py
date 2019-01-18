@@ -15,7 +15,7 @@ operation = video_client.annotate_video(
     video_context=video_context)
 
 print('\nProcessing video for text detection.')
-result = operation.result(timeout=10000)
+result = operation.result(timeout=300)
 
 # The first result is retrieved because a single video was processed.
 annotation_result = result.annotation_results[0]
