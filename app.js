@@ -18,7 +18,6 @@ const passport = require('passport');
 const expressValidator = require('express-validator');
 const expressStatusMonitor = require('express-status-monitor');
 const sass = require('node-sass-middleware');
-const PythonShell = require('python-shell');
 const multer = require('multer');
 
 var storage = multer.diskStorage({
@@ -183,10 +182,24 @@ app.get('/api/paypal/success', apiController.getPayPalSuccess);
 app.get('/api/paypal/cancel', apiController.getPayPalCancel);
 app.get('/api/lob', apiController.getLob);
 app.get('/api/upload', apiController.getFileUpload);
-app.post('/api/upload', upload.single('file'), apiController.postFileUpload, function() {
-  PythonShell.run('TextExtract.py', null, function(err) {
-    if (err) throw err;
-    console.log('Finished running python file.');
+
+var extractionPath = 'TextExtract.py';
+// Use python shell
+var {PythonShell} = require('python-shell');
+var pyshell = new PythonShell(extractionPath);
+
+app.post('/api/upload', upload.single('file'), apiController.postFileUpload, (req, res, next) => {
+  pyshell.on('message', function (message) {
+    // received a message sent from the Python script (a simple "print" statement)
+    console.log(message);
+  });
+
+  // end the input stream and allow the process to exit
+  pyshell.end(function (err) {
+    if (err){
+      throw err;
+    };
+    console.log('finished');
   });
 });
 app.get('/api/pinterest', passportConfig.isAuthenticated, passportConfig.isAuthorized, apiController.getPinterest);
