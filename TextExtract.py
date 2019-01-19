@@ -137,12 +137,14 @@ for line in lines:
         else:
             code.append(line)
 
-
-'''
-print("No of lines: " + str(len(code)))
+#print("No of lines: " + str(len(code)))
+source_code = '';
 for line in code:
-    print(line)
-'''
+    source_code += line
+    source_code += '\n'
+
+f = open("SourceCode.txt", "w")
+f.write(source_code)
 
 curr_time = time.time() 
 print('Tuning Time: ' + str(curr_time - prev_time))
